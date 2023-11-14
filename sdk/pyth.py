@@ -1,7 +1,5 @@
 import asyncio
-
 import loguru
-import requests
 import aiohttp
 
 def lower(wallet: str) -> str:

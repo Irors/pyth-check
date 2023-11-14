@@ -16,4 +16,8 @@ with open('wallets/Sui-wallets.txt') as suw:
 
 if __name__ == '__main__':
     loguru.logger.info('Начинаю парсить')
+    main_check(apw)
+    main_check(emw)
+    main_check(sow)
     main_check(suw)
+    loguru.logger.success('Закончил парсить успешно')
