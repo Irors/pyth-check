@@ -22,6 +22,7 @@ async def reqst(address: str, ecosystem: str):
 
             response = await session.get('https://airdrop.pyth.network/api/grant/v1/amount_and_proof', params=params)
             if response.status == 200:
+                loguru.logger.info(f'{ecosystem}...')
                 file.write(f'{address}\n')
 
     file.close()
@@ -30,32 +31,21 @@ async def reqst(address: str, ecosystem: str):
 async def get_eligible(wallets: list, ecosystem: str) -> bool:
 
     tasks = []
+    loguru.logger.info(f'Найдено {len(wallets)} кошельков')
     for address in wallets:
         tasks.append(asyncio.create_task(reqst(address, ecosystem)))
 
     await asyncio.gather(*tasks)
 
-def main_check(wallets: list):
+def main_check(wallets: list, ecosystem: str):
     try:
-
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-
-        match len(wallets[0]):
-
-            case 66: # SUI
-                loguru.logger.info('Sui...')
-                loop.run_until_complete(get_eligible(wallets=wallets, ecosystem='sui'))
-
-            case 44: # Solana
-                loguru.logger.info('Solana...')
-                loop.run_until_complete(get_eligible(wallets=wallets, ecosystem='solana'))
-
-            case 42: # EVM
-                loguru.logger.info('EVM...')
-                loop.run_until_complete(get_eligible(wallets=wallets, ecosystem='evm'))
-
+        loop.run_until_complete(get_eligible(wallets=wallets, ecosystem=ecosystem))
         loop.close()
 
-    except Exception as e:
-        print('Проблема с указанием кошелька(ов)')
+    except IndexError:
+        pass
+
+    except:
+        loguru.logger.error('Проблема с указанием кошелька(ов)')
