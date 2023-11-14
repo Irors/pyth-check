@@ -1,9 +1,13 @@
 import asyncio
-import loguru
+from loguru import logger
+from sys import stderr
 import aiohttp
 
-def lower(wallet: str) -> str:
-    return wallet.lower()
+
+def add_logger():
+    logger.remove()
+    logger.add(stderr, format="<bold><blue>{time:HH:mm:ss}</blue> | <level>{level}</level> | <level>{message}</level></bold>")
+
 
 async def reqst(address: str, ecosystem: str):
     with open('result/result-pyth.txt', 'a') as file:
@@ -22,7 +26,6 @@ async def reqst(address: str, ecosystem: str):
 
             response = await session.get('https://airdrop.pyth.network/api/grant/v1/amount_and_proof', params=params)
             if response.status == 200:
-                loguru.logger.info(f'{ecosystem}...')
                 file.write(f'{address}\n')
 
     file.close()
@@ -31,7 +34,7 @@ async def reqst(address: str, ecosystem: str):
 async def get_eligible(wallets: list, ecosystem: str) -> bool:
 
     tasks = []
-    loguru.logger.info(f'Найдено {len(wallets)} кошельков')
+    logger.info(f'Найдено {len(wallets)} кошельков | {ecosystem}')
     for address in wallets:
         tasks.append(asyncio.create_task(reqst(address, ecosystem)))
 
@@ -48,4 +51,4 @@ def main_check(wallets: list, ecosystem: str):
         pass
 
     except:
-        loguru.logger.error('Проблема с указанием кошелька(ов)')
+        logger.error('Проблема с указанием кошелька(ов)')

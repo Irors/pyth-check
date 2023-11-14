@@ -1,1 +1,1 @@
-from .pyth import main_check
+from .pyth import main_check, add_logger
